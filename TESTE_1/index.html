@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hack da Torre de Copos · Carnaval</title>
+  <meta name="description" content="Jogo de destreza com tema de carnaval: colha a torre de copos no ritmo do samba e desbloqueie papercrafts para imprimir.">
+  <meta name="theme-color" content="#2b0f3a">
+  <meta name="color-scheme" content="dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Torre de Copos">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/favicon.ico" sizes="any">
+  <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true"></div>
+
+  <div id="app">
+
+    <!-- ============ HOME ============ -->
+    <section id="screen-home" class="screen screen-home is-active" aria-labelledby="home-title">
+      <header class="home-top">
+        <div class="brand-row">
+          <img class="app-badge" src="icons/icon-192.png" width="64" height="64" alt="" aria-hidden="true">
+          <p class="kicker">PWA de Carnaval</p>
+        </div>
+        <h1 id="home-title" tabindex="-1">Hack da <span>Torre<br>de Copos</span></h1>
+        <p class="lede">Colha a pirâmide no ritmo do samba e desbloqueie papercrafts de bloco.</p>
+      </header>
+
+      <div class="record-card">
+        <div>
+          <span class="record-label">Seu recorde</span>
+          <strong id="home-record">Ainda sem recorde</strong>
+        </div>
+        <div class="record-stars" id="home-stars" aria-label="Melhor resultado em estrelas"></div>
+      </div>
+
+      <div class="field">
+        <label for="player-name">Seu nome no bloco</label>
+        <input id="player-name" name="player-name" type="text" maxlength="16" autocomplete="nickname"
+               placeholder="Folião" enterkeyhint="done">
+      </div>
+
+      <div class="difficulty" role="group" aria-label="Dificuldade">
+        <button type="button" class="chip" data-diff="ensaio">Ensaio<span>tranquilo</span></button>
+        <button type="button" class="chip is-on" data-diff="bloco">Bloco<span>no ritmo</span></button>
+        <button type="button" class="chip" data-diff="apoteose">Apoteose<span>insano</span></button>
+      </div>
+
+      <button type="button" id="btn-play" class="btn btn-primary btn-xl">Jogar agora</button>
+
+      <nav class="home-actions" aria-label="Mais opções">
+        <button type="button" class="btn btn-ghost btn-sm" data-go="paper">🎁 Prêmios</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-go="rank">🏆 Ranking</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-how">❓ Ajuda</button>
+        <button type="button" class="btn btn-ghost btn-sm btn-square" id="btn-settings" aria-label="Ajustes">⚙</button>
+      </nav>
+
+      <button type="button" class="install-card" id="btn-install" hidden>
+        <span class="install-ico" aria-hidden="true">⤓</span>
+        <span class="install-text">
+          <strong>Instalar o app</strong>
+          <small>Jogue offline, direto da tela inicial</small>
+        </span>
+      </button>
+
+      <p class="home-foot">
+        <span id="net-dot" class="net-dot" aria-hidden="true"></span>
+        <span id="net-label">Online</span>
+        <span class="home-foot-sep" aria-hidden="true">·</span>
+        <span>v1.0</span>
+      </p>
+    </section>
+
+    <!-- ============ GAME ============ -->
+    <section id="screen-game" class="screen screen-game" aria-labelledby="game-title" hidden>
+      <header class="game-hud">
+        <button type="button" class="icon-btn" id="btn-quit" aria-label="Sair da partida">✕</button>
+        <h2 id="game-title" class="sr-only">Partida</h2>
+        <div class="hud-stats">
+          <div class="hud-pill"><span>Tempo</span><b id="hud-time">0,0s</b></div>
+          <div class="hud-pill"><span>Pontos</span><b id="hud-score">0</b></div>
+          <div class="hud-pill"><span>Combo</span><b id="hud-combo">x0</b></div>
+        </div>
+        <button type="button" class="icon-btn" id="btn-pause" aria-label="Pausar">❚❚</button>
+      </header>
+
+      <div class="timing" aria-hidden="true"><div class="timing-fill" id="timing-fill"></div></div>
+
+      <div class="stage-wrap">
+        <div class="stage" id="stage">
+          <div class="stage-floor" aria-hidden="true"></div>
+          <div class="cups" id="cups"></div>
+          <div class="cue-ring" id="cue-ring" hidden></div>
+          <div class="floaters" id="floaters" aria-hidden="true"></div>
+
+          <div class="swipe-layer" id="swipe-layer" hidden>
+            <div class="swipe-box">
+              <span class="swipe-arrow" aria-hidden="true">↓</span>
+              <strong>Arraste para colher!</strong>
+              <small>Deslize o dedo para baixo na mesa ou pressione ↓</small>
+            </div>
+          </div>
+
+          <div class="count" id="count" hidden aria-hidden="true"></div>
+
+          <div class="pause-overlay" id="pause-overlay" hidden>
+            <div class="pause-card">
+              <p class="kicker">Intervalo</p>
+              <h3>Jogo pausado</h3>
+              <p>Respire, pegue um confete e volte pro bloco.</p>
+              <button type="button" class="btn btn-primary" id="btn-resume">Continuar</button>
+              <button type="button" class="btn btn-ghost" id="btn-exit">Sair da partida</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="game-foot">
+        <p id="game-tip">Toque no copo aceso antes do anel fechar.</p>
+      </footer>
+    </section>
+
+    <!-- ============ RESULT ============ -->
+    <section id="screen-result" class="screen screen-result" aria-labelledby="result-title" hidden>
+      <canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
+      <div class="result-card">
+        <p class="kicker" id="result-kicker">Colheita concluída</p>
+        <div class="stars" id="result-stars" aria-label="Estrelas conquistadas"></div>
+        <h2 id="result-title" tabindex="-1">Boa, folião!</h2>
+        <p class="result-sub" id="result-sub"></p>
+
+        <div class="result-grid">
+          <div class="result-stat"><span>Tempo</span><b id="result-time">—</b></div>
+          <div class="result-stat"><span>Pontos</span><b id="result-score">—</b></div>
+          <div class="result-stat"><span>Precisão</span><b id="result-acc">—</b></div>
+        </div>
+
+        <div class="unlock" id="unlock" hidden>
+          <span class="unlock-ico" aria-hidden="true">🎁</span>
+          <div>
+            <strong>Novo papercraft liberado!</strong>
+            <p id="unlock-text"></p>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-xl" id="btn-again">Jogar de novo</button>
+        <div class="row">
+          <button type="button" class="btn btn-ghost" data-go="paper">Ver prêmios</button>
+          <button type="button" class="btn btn-ghost" data-go="home">Início</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PAPERCRAFTS ============ -->
+    <section id="screen-paper" class="screen screen-list" aria-labelledby="paper-title" hidden>
+      <header class="page-head">
+        <button type="button" class="icon-btn" data-go="home" aria-label="Voltar">←</button>
+        <div>
+          <p class="kicker">Prêmios do bloco</p>
+          <h2 id="paper-title" tabindex="-1">Papercrafts</h2>
+        </div>
+        <div class="star-count" id="paper-stars" aria-label="Estrelas atuais"></div>
+      </header>
+      <p class="page-sub">Moldes A4 para recortar, dobrar e colar. Ganhe estrelas jogando para liberar cada peça.</p>
+      <div class="paper-list" id="paper-list"></div>
+      <p class="page-note">Dica: imprima em papel 180g ou cole o molde em cartolina antes de recortar.</p>
+    </section>
+
+    <!-- ============ RANKING ============ -->
+    <section id="screen-rank" class="screen screen-list" aria-labelledby="rank-title" hidden>
+      <header class="page-head">
+        <button type="button" class="icon-btn" data-go="home" aria-label="Voltar">←</button>
+        <div>
+          <p class="kicker">Só os foliões</p>
+          <h2 id="rank-title" tabindex="-1">Ranking</h2>
+        </div>
+        <div class="trophy" aria-hidden="true">🏆</div>
+      </header>
+      <p class="page-sub">Top 10 do seu bloco, salvo neste aparelho.</p>
+      <ol class="rank-list" id="rank-list"></ol>
+      <p class="page-note" id="rank-empty" hidden>Ainda não tem ninguém no pódio. Jogue uma partida para inaugurar!</p>
+    </section>
+
+    <!-- ============ SETTINGS SHEET ============ -->
+    <div class="sheet" id="sheet-settings" hidden>
+      <button type="button" class="sheet-backdrop" data-close-sheet aria-label="Fechar ajustes"></button>
+      <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+        <div class="sheet-grip" aria-hidden="true"></div>
+        <header class="sheet-head">
+          <h2 id="settings-title">Ajustes</h2>
+          <button type="button" class="icon-btn" data-close-sheet aria-label="Fechar">✕</button>
+        </header>
+
+        <label class="switch-row">
+          <span><strong>Som</strong><small>Batida do samba e efeitos</small></span>
+          <input type="checkbox" id="set-sound" class="switch">
+        </label>
+        <label class="switch-row">
+          <span><strong>Vibração</strong><small>Retorno tátil nos toques</small></span>
+          <input type="checkbox" id="set-vibrate" class="switch">
+        </label>
+        <label class="switch-row">
+          <span><strong>Reduzir animações</strong><small>Menos movimento na tela</small></span>
+          <input type="checkbox" id="set-motion" class="switch">
+        </label>
+
+        <button type="button" class="btn btn-danger" id="btn-reset">Apagar progresso</button>
+        <p class="sheet-note">Hack da Torre de Copos · feito para o seu bloco 🎉</p>
+      </div>
+    </div>
+
+    <!-- ============ TUTORIAL SHEET ============ -->
+    <div class="sheet" id="sheet-tutorial" hidden>
+      <button type="button" class="sheet-backdrop" data-close-sheet aria-label="Fechar tutorial"></button>
+      <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="tutorial-title">
+        <div class="sheet-grip" aria-hidden="true"></div>
+        <header class="sheet-head">
+          <h2 id="tutorial-title">Como jogar</h2>
+          <button type="button" class="icon-btn" data-close-sheet aria-label="Fechar">✕</button>
+        </header>
+        <ol class="how-list">
+          <li><span class="how-num">1</span><div><strong>Toque no copo aceso</strong><p>Um copo brilha a cada batida. Toque nele antes do anel fechar.</p></div></li>
+          <li><span class="how-num">2</span><div><strong>Arraste para colher</strong><p>Quando a fileira sumir, deslize o dedo para baixo (ou pressione ↓) para juntar a pilha.</p></div></li>
+          <li><span class="how-num">3</span><div><strong>Ganhe estrelas</strong><p>Precisão e combo valem pontos. As estrelas liberam papercrafts para imprimir.</p></div></li>
+        </ol>
+        <button type="button" class="btn btn-primary btn-xl" id="btn-tutorial-go">Bora pro bloco!</button>
+      </div>
+    </div>
+
+    <!-- ============ PREVIEW SHEET ============ -->
+    <div class="sheet" id="sheet-preview" hidden>
+      <button type="button" class="sheet-backdrop" data-close-sheet aria-label="Fechar prévia"></button>
+      <div class="sheet-panel sheet-preview-panel" role="dialog" aria-modal="true" aria-labelledby="preview-title">
+        <div class="sheet-grip" aria-hidden="true"></div>
+        <header class="sheet-head">
+          <div>
+            <p class="kicker">Molde A4</p>
+            <h2 id="preview-title">Papercraft</h2>
+          </div>
+          <button type="button" class="icon-btn" data-close-sheet aria-label="Fechar">✕</button>
+        </header>
+        <div class="preview-frame">
+          <img id="preview-img" src="" alt="">
+        </div>
+        <p class="page-note" id="preview-desc"></p>
+        <div class="preview-actions">
+          <a class="btn" id="preview-pdf" href="#" download>Baixar PDF</a>
+          <button type="button" class="btn btn-ghost" id="preview-print">Imprimir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ INSTALL SHEET (iOS / fallback) ============ -->
+    <div class="sheet" id="sheet-install" hidden>
+      <button type="button" class="sheet-backdrop" data-close-sheet aria-label="Fechar instalação"></button>
+      <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="install-title">
+        <div class="sheet-grip" aria-hidden="true"></div>
+        <header class="sheet-head">
+          <h2 id="install-title">Instalar o app</h2>
+          <button type="button" class="icon-btn" data-close-sheet aria-label="Fechar">✕</button>
+        </header>
+        <div class="install-instructions" id="install-instructions"></div>
+        <button type="button" class="btn btn-ghost" data-close-sheet>Entendi</button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <div class="update-bar" id="update-bar" hidden>
+      <span>Nova versão do bloco disponível!</span>
+      <button type="button" id="btn-update">Atualizar</button>
+    </div>
+    <iframe id="print-frame" class="print-frame" title="Molde para impressão" hidden></iframe>
+  </div>
+
+  <script src="js/audio.js" defer></script>
+  <script src="js/game.js" defer></script>
+  <script src="js/papercraft.js" defer></script>
+  <script src="js/app.js" defer></script>
+</body>
+</html>

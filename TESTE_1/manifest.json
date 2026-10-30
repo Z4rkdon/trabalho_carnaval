@@ -1,0 +1,82 @@
+{
+  "id": "./",
+  "name": "Hack da Torre de Copos — Carnaval",
+  "short_name": "Torre de Copos",
+  "description": "Jogo de destreza com tema de carnaval: colha a torre de copos no ritmo do samba e desbloqueie papercrafts para imprimir.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#160821",
+  "theme_color": "#2b0f3a",
+  "categories": ["games", "entertainment", "education"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/home-390x844.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tela inicial do Hack da Torre de Copos"
+    },
+    {
+      "src": "screenshots/jogo-390x844.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Partida com a torre de copos"
+    },
+    {
+      "src": "screenshots/resultado-390x844.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Resultado com estrelas e prêmios"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Jogar agora",
+      "short_name": "Jogar",
+      "description": "Começa uma partida imediatamente",
+      "url": "./?jogar=1",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Papercrafts",
+      "short_name": "Prêmios",
+      "description": "Abre a galeria de moldes para imprimir",
+      "url": "./?tela=paper",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}
